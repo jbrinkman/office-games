@@ -69,7 +69,7 @@ The app is static files plus Firebase Realtime Database, so there is no server t
 3. Build > Realtime Database: create a database (locked mode is fine, the rules are deployed below).
 4. Project settings > Your apps: add a **Web app** and copy its config.
 5. Copy `apps/peril/.env.example` to `apps/peril/.env.production.local` and fill in the values. They identify your project and are not secrets.
-6. Set your project ID in `.firebaserc` (`firebase use --add`), then:
+6. Select your project (`pnpm exec firebase use --add`, which creates a local `.firebaserc` that is not committed), then:
 
 ```sh
 pnpm exec firebase login

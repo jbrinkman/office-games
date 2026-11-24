@@ -13,3 +13,6 @@ ui-debug.log
 
 # Reference material that is not ours to redistribute
 docs/reference/
+
+# Per-developer Firebase project selection
+.firebaserc
