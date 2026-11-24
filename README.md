@@ -8,7 +8,7 @@ The first game is **Peril!**, a quiz game in the style of the classic TV quiz sh
 
 ## How a game works
 
-1. The Host signs in with Google, loads a Gamefile (or picks the bundled sample), and adds 2 to 6 Contestants.
+1. The Host signs in with Google (the account must be on the Host list), loads a Gamefile (or picks the bundled sample), and adds 2 to 6 Contestants.
 2. The app gives the Host a game URL such as `https://your-site.web.app/g/K7M2QX`. Anyone with the link can watch the board and scores live. No sign-in is needed.
 3. The Host runs the game from a private console: picking Clues, revealing Responses, judging them correct or wrong, setting Double Down wagers, and running Final Peril.
 
@@ -35,9 +35,10 @@ You need Node 22.12 or newer, pnpm, and Java 17 or newer (for the Firebase emula
 pnpm install
 pnpm emulators   # terminal 1: Firebase Auth + Realtime Database emulators
 pnpm dev         # terminal 2: the app at http://localhost:5173
+pnpm seed:emulator you@example.com   # terminal 3: add yourself to the local Host list
 ```
 
-Development runs entirely against the local emulators, so you do not need a Firebase project. Choose "Sign in with Google" and the emulator offers a fake account. Open the Viewer link in a second browser profile to see both sides.
+Development runs entirely against the local emulators, so you do not need a Firebase project. Choose "Sign in with Google", then "Add new account" in the emulator popup, and enter the same email you seeded (the emulator accepts any address). The local list resets whenever the emulator restarts. Open the Viewer link in a second browser profile to see both sides.
 
 Other commands:
 
@@ -78,6 +79,8 @@ pnpm exec firebase login
 pnpm exec firebase use --add
 ```
 
+7. Add your first Host. Nobody can create a game until their email is on the Host list, so see [Managing Hosts](#managing-hosts) and add yourself.
+
 If your hosting domain is not already listed, add it under Authentication > Settings > Authorized domains. Firebase normally includes the default `*.web.app` domain.
 
 ### Deploying changes
@@ -97,12 +100,31 @@ Run `pnpm lint && pnpm typecheck && pnpm test && pnpm test:rules` first if you w
 - Spark allows **100 simultaneous connections** for the whole project (one per open browser tab), plus 10 GB of database downloads per month.
 - Games expire after the lifetime the Host picks (1 to 24 hours, default 6) since the last Host action. Security rules refuse access to an expired game. There is no server to clean up, so the data is deleted the next time that Host opens the app or ends the game.
 
+### Managing Hosts
+
+Only accounts on the Host list can create games. Viewers never need to sign in. The list lives in the database at `/allowedHosts`, so changing it needs no code change or deploy. It is not stored in this repository, which keeps people's email addresses out of a public repo.
+
+Each entry is the Host's Google email in lowercase with dots replaced by commas, set to `true`. For example, `jane.smith@gmail.com` becomes `jane,smith@gmail,com`. Realtime Database keys cannot contain dots.
+
+To add a Host in the console: Build > Realtime Database > Data, hover over the root, choose **+** to add a child `allowedHosts` if it does not exist, then add a child named like `jane,smith@gmail,com` with the value `true`. To remove a Host, delete the entry or set it to `false`.
+
+From the command line, with the Firebase CLI signed in to the project:
+
+```sh
+pnpm exec firebase database:set /allowedHosts/jane,smith@gmail,com --data true --force
+pnpm exec firebase database:remove /allowedHosts/jane,smith@gmail,com --force
+```
+
+Whoever can edit your Firebase project (Project settings > Users and permissions) can edit the list. The app cannot change it. A removed Host cannot create new games or extend existing ones, and games they already started simply run out at their current expiry.
+
+Hosts need a Google account that signs in directly. Some company Google accounts hand off to another identity provider and fail, so personal Gmail addresses are the safe choice.
+
 ### Security model
 
 There is no server code, so [`firebase/database.rules.json`](./firebase/database.rules.json) is the security boundary:
 
 - Anyone can read a game's public state if they know its unguessable 6 character code. Nobody can list games.
-- Only the signed-in Host who created a game can write to it.
+- Only a signed-in Host whose verified Google email is on the Host list can create a game, and only that Host can write to it. Clients can read only their own entry in the list and can never change it.
 - Unrevealed Responses and Final Peril entries live in a Host-only path. Viewers cannot read them.
 
 See [docs/adr](./docs/adr) for why the app is built this way.

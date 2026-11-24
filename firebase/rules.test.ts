@@ -36,6 +36,13 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await env.clearDatabase()
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.database()
+    await set(ref(db, "allowedHosts/host@example,com"), true)
+    await set(ref(db, "allowedHosts/other@example,com"), true)
+    await set(ref(db, "allowedHosts/jo,smith@my,org,example,com"), true)
+    await set(ref(db, "allowedHosts/removed@example,com"), false)
+  })
 })
 
 /** Seed a live game owned by "host1" without going through the rules. */
@@ -48,9 +55,76 @@ async function seed(hoursLeft = 6) {
   })
 }
 
-const host = () => env.authenticatedContext("host1").database()
-const other = () => env.authenticatedContext("someone-else").database()
+const asUser = (uid: string, email: string, verified = true) =>
+  env.authenticatedContext(uid, { email, email_verified: verified }).database()
+
+// Both are on the allowlist (see beforeEach). Their emails are stored dot-free in the database.
+const host = () => asUser("host1", "host@example.com")
+const other = () => asUser("someone-else", "other@example.com")
 const viewer = () => env.unauthenticatedContext().database()
+
+describe("who can host", () => {
+  const claim = (db: ReturnType<typeof host>, uid: string) =>
+    set(ref(db, `games/${CODE}/meta`), meta(uid))
+
+  it("accepts a listed account, whatever the letter case", async () => {
+    await assertSucceeds(claim(asUser("u1", "Host@Example.COM"), "u1"))
+  })
+
+  it("handles addresses with several dots", async () => {
+    await assertSucceeds(claim(asUser("u2", "Jo.Smith@my.org.example.com"), "u2"))
+  })
+
+  it("rejects a signed-in account that is not on the list", async () => {
+    await assertFails(claim(asUser("u3", "stranger@example.com"), "u3"))
+  })
+
+  it("rejects a listed address that is not verified", async () => {
+    await assertFails(claim(asUser("u4", "host@example.com", false), "u4"))
+  })
+
+  it("rejects an address whose list entry is not true", async () => {
+    await assertFails(claim(asUser("u5", "removed@example.com"), "u5"))
+  })
+
+  it("rejects lookalike addresses", async () => {
+    for (const email of ["host@example.com.evil.io", "xhost@example.com", "host@examplexcom"]) {
+      await assertFails(claim(asUser("u6", email), "u6"))
+    }
+  })
+
+  it("rejects an account with no email claim", async () => {
+    await assertFails(claim(env.authenticatedContext("u7").database(), "u7"))
+  })
+
+  it("keeps unlisted accounts out of the Host game list", async () => {
+    await assertFails(
+      set(ref(asUser("u8", "stranger@example.com"), `hosts/u8/${CODE}`), Date.now() + HOUR),
+    )
+  })
+
+  it("lets an account read only its own allowlist entry", async () => {
+    await assertSucceeds(get(ref(host(), "allowedHosts/host@example,com")))
+    await assertSucceeds(
+      get(ref(asUser("u9", "stranger@example.com"), "allowedHosts/stranger@example,com")),
+    )
+    await assertFails(get(ref(host(), "allowedHosts/other@example,com")))
+    await assertFails(get(ref(host(), "allowedHosts")))
+    await assertFails(get(ref(viewer(), "allowedHosts/host@example,com")))
+  })
+
+  it("never lets a client change the allowlist", async () => {
+    await assertFails(set(ref(host(), "allowedHosts/stranger@example,com"), true))
+    await assertFails(set(ref(host(), "allowedHosts/host@example,com"), false))
+    await assertFails(remove(ref(host(), "allowedHosts/host@example,com")))
+    await assertFails(set(ref(viewer(), "allowedHosts/x@example,com"), true))
+  })
+
+  it("still lets any Viewer watch without signing in", async () => {
+    await seed()
+    await assertSucceeds(get(ref(viewer(), `games/${CODE}/public`)))
+  })
+})
 
 describe("creating a game", () => {
   it("lets a signed-in Host claim a free code", async () => {

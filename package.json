@@ -16,7 +16,8 @@
     "test:rules": "firebase emulators:exec --only database --project demo-office-games \"vitest run --root firebase\"",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "deploy": "pnpm build && firebase deploy"
+    "deploy": "pnpm build && firebase deploy",
+    "seed:emulator": "node scripts/seed-emulator.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.8",

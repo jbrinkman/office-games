@@ -2,10 +2,15 @@
   "rules": {
     ".read": false,
     ".write": false,
+    "allowedHosts": {
+      "$key": {
+        ".read": "auth != null && auth.token.email_verified === true && $key === auth.token.email.toLowerCase().replace('.', ',')"
+      }
+    },
     "hosts": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.token.email_verified === true && root.child('allowedHosts').child(auth.token.email.toLowerCase().replace('.', ',')).val() === true && auth.uid === $uid",
         "$code": { ".validate": "newData.isNumber()" }
       }
     },
@@ -15,7 +20,7 @@
         ".write": "auth != null && !newData.exists() && data.child('meta/hostUid').val() === auth.uid",
         "meta": {
           ".read": "auth != null && data.child('hostUid').val() === auth.uid",
-          ".write": "auth != null && newData.child('hostUid').val() === auth.uid && (!data.exists() || (data.child('hostUid').val() === auth.uid && data.child('expiresAt').val() > now))",
+          ".write": "auth != null && auth.token.email_verified === true && root.child('allowedHosts').child(auth.token.email.toLowerCase().replace('.', ',')).val() === true && newData.child('hostUid').val() === auth.uid && (!data.exists() || (data.child('hostUid').val() === auth.uid && data.child('expiresAt').val() > now))",
           ".validate": "newData.hasChildren(['hostUid', 'expiresAt', 'ttlHours'])",
           "hostUid": { ".validate": "newData.isString()" },
           "expiresAt": {
