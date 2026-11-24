@@ -1,0 +1,383 @@
+{
+  "$schema": "./gamefile.schema.json",
+  "version": 1,
+  "title": "Peril! Sample Game",
+  "rounds": [
+    {
+      "categories": [
+        {
+          "name": "SPACE",
+          "clues": [
+            {
+              "value": 200,
+              "clue": "This planet, fourth from the Sun, is nicknamed the Red Planet.",
+              "response": "What is Mars?"
+            },
+            {
+              "value": 400,
+              "clue": "In 1969, Neil Armstrong became the first person to walk on this celestial body.",
+              "response": "What is the Moon?"
+            },
+            {
+              "value": 600,
+              "clue": "The largest planet in our solar system has a storm called the Great Red Spot that is bigger than Earth.",
+              "response": "What is Jupiter?"
+            },
+            {
+              "value": 800,
+              "clue": "Saturn's largest moon has a thick atmosphere and shares its name with a group of Greek giants.",
+              "response": "What is Titan?"
+            },
+            {
+              "value": 1000,
+              "clue": "Our home galaxy takes its name from the Greek word for milk.",
+              "response": "What is the Milky Way?"
+            }
+          ]
+        },
+        {
+          "name": "WORLD CAPITALS",
+          "clues": [
+            {
+              "value": 200,
+              "clue": "Paris is the capital of this country.",
+              "response": "What is France?"
+            },
+            {
+              "value": 400,
+              "clue": "This Japanese capital is home to the famous Shibuya Crossing.",
+              "response": "What is Tokyo?"
+            },
+            {
+              "value": 600,
+              "clue": "Not Toronto or Montreal, this city on the Ottawa River is Canada's capital.",
+              "response": "What is Ottawa?"
+            },
+            {
+              "value": 800,
+              "clue": "Canberra, not Sydney, is the capital of this country.",
+              "response": "What is Australia?"
+            },
+            {
+              "value": 1000,
+              "clue": "La Paz, one of the world's highest capital cities, is the seat of government of this South American country.",
+              "response": "What is Bolivia?"
+            }
+          ]
+        },
+        {
+          "name": "FOOD & DRINK",
+          "clues": [
+            {
+              "value": 200,
+              "clue": "This Italian dish topped with tomato sauce and mozzarella originated in Naples.",
+              "response": "What is pizza?"
+            },
+            {
+              "value": 400,
+              "clue": "Guacamole is made primarily from this green fruit.",
+              "response": "What is an avocado?"
+            },
+            {
+              "value": 600,
+              "clue": "The world's most expensive spice by weight comes from the stigmas of the crocus flower.",
+              "response": "What is saffron?"
+            },
+            {
+              "value": 800,
+              "clue": "Sous vide, French for \"under vacuum,\" cooks food in a precisely heated bath of this liquid.",
+              "response": "What is water?"
+            },
+            {
+              "value": 1000,
+              "clue": "The Scoville scale measures the heat of these.",
+              "response": "What are chili peppers?"
+            }
+          ]
+        },
+        {
+          "name": "ANIMAL KINGDOM",
+          "clues": [
+            {
+              "value": 200,
+              "clue": "This African animal is the tallest in the world thanks to its very long neck.",
+              "response": "What is a giraffe?"
+            },
+            {
+              "value": 400,
+              "clue": "A group of lions is called this.",
+              "response": "What is a pride?"
+            },
+            {
+              "value": 600,
+              "clue": "This is the only mammal capable of true, sustained flight.",
+              "response": "What is a bat?"
+            },
+            {
+              "value": 800,
+              "clue": "This eight-armed sea creature has three hearts and blue blood.",
+              "response": "What is an octopus?",
+              "doubleDown": true
+            },
+            {
+              "value": 1000,
+              "clue": "The fastest land animal, it can sprint at about 60 to 70 miles per hour in short bursts.",
+              "response": "What is a cheetah?"
+            }
+          ]
+        },
+        {
+          "name": "OFFICE LIFE",
+          "clues": [
+            {
+              "value": 200,
+              "clue": "Accidentally clicking this email button sends your message to everyone on the thread.",
+              "response": "What is Reply All?"
+            },
+            {
+              "value": 400,
+              "clue": "This Microsoft suite includes Word, Excel, and PowerPoint.",
+              "response": "What is Microsoft 365 (or Office)?"
+            },
+            {
+              "value": 600,
+              "clue": "This three-letter spreadsheet function adds up a range of cells.",
+              "response": "What is SUM?"
+            },
+            {
+              "value": 800,
+              "clue": "On Windows, this keyboard shortcut undoes your last action.",
+              "response": "What is Ctrl+Z?"
+            },
+            {
+              "value": 1000,
+              "clue": "The paperclip helper that popped up in old versions of Office was officially named this.",
+              "response": "What is Clippit (Clippy)?"
+            }
+          ]
+        },
+        {
+          "name": "SCIENCE CLASS",
+          "clues": [
+            {
+              "value": 200,
+              "clue": "The chemical formula H2O stands for this.",
+              "response": "What is water?"
+            },
+            {
+              "value": 400,
+              "clue": "About 78 percent of Earth's atmosphere is this gas.",
+              "response": "What is nitrogen?"
+            },
+            {
+              "value": 600,
+              "clue": "Au is the chemical symbol for this precious metal.",
+              "response": "What is gold?"
+            },
+            {
+              "value": 800,
+              "clue": "Biology class says this organelle is the powerhouse of the cell.",
+              "response": "What are mitochondria?"
+            },
+            {
+              "value": 1000,
+              "clue": "The SI unit of force is named for this English scientist.",
+              "response": "What is Newton?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "categories": [
+        {
+          "name": "GEOGRAPHY",
+          "clues": [
+            {
+              "value": 400,
+              "clue": "This river, flowing north through Egypt, is the longest in Africa.",
+              "response": "What is the Nile?"
+            },
+            {
+              "value": 800,
+              "clue": "The world's largest island that is not a continent belongs to Denmark's realm and is mostly covered in ice.",
+              "response": "What is Greenland?"
+            },
+            {
+              "value": 1200,
+              "clue": "This mountain range, running through Russia, traditionally separates Europe from Asia.",
+              "response": "What are the Urals?"
+            },
+            {
+              "value": 1600,
+              "clue": "Shared by Uganda, Kenya, and Tanzania, this is Africa's largest lake by area.",
+              "response": "What is Lake Victoria?"
+            },
+            {
+              "value": 2000,
+              "clue": "The strait of this name separates Spain from Morocco.",
+              "response": "What is Gibraltar?"
+            }
+          ]
+        },
+        {
+          "name": "MOVIES",
+          "clues": [
+            {
+              "value": 400,
+              "clue": "In this 1997 film, Jack and Rose meet aboard a doomed ocean liner.",
+              "response": "What is Titanic?"
+            },
+            {
+              "value": 800,
+              "clue": "This animated film follows a clownfish named Marlin searching for his son.",
+              "response": "What is Finding Nemo?"
+            },
+            {
+              "value": 1200,
+              "clue": "This director made Jaws, E.T., and Jurassic Park.",
+              "response": "Who is Steven Spielberg?"
+            },
+            {
+              "value": 1600,
+              "clue": "Dorothy says \"There's no place like home\" in this 1939 film.",
+              "response": "What is The Wizard of Oz?"
+            },
+            {
+              "value": 2000,
+              "clue": "Orson Welles directed and starred in this 1941 film that begins with the dying word \"Rosebud.\"",
+              "response": "What is Citizen Kane?"
+            }
+          ]
+        },
+        {
+          "name": "BOOKS",
+          "clues": [
+            {
+              "value": 400,
+              "clue": "Pride and Prejudice was written by this English novelist.",
+              "response": "Who is Jane Austen?"
+            },
+            {
+              "value": 800,
+              "clue": "J.K. Rowling's first Harry Potter book is titled for this magical stone.",
+              "response": "What is the Philosopher's (Sorcerer's) Stone?"
+            },
+            {
+              "value": 1200,
+              "clue": "In George Orwell's 1984, the slogan says this figure \"is watching you.\"",
+              "response": "Who is Big Brother?"
+            },
+            {
+              "value": 1600,
+              "clue": "This Russian author wrote both War and Peace and Anna Karenina.",
+              "response": "Who is Leo Tolstoy?",
+              "doubleDown": true
+            },
+            {
+              "value": 2000,
+              "clue": "Herman Melville's Moby-Dick opens with these three words, an invitation to address the narrator.",
+              "response": "What is \"Call me Ishmael\"?"
+            }
+          ]
+        },
+        {
+          "name": "MUSIC",
+          "clues": [
+            {
+              "value": 400,
+              "clue": "A standard piano has this many keys.",
+              "response": "What is 88?"
+            },
+            {
+              "value": 800,
+              "clue": "This band from Liverpool featured John, Paul, George, and Ringo.",
+              "response": "Who are the Beatles?"
+            },
+            {
+              "value": 1200,
+              "clue": "This Austrian composer wrote The Magic Flute and died at just 35.",
+              "response": "Who is Mozart?"
+            },
+            {
+              "value": 1600,
+              "clue": "This Italian composer's best-known work is a set of four violin concertos named for the seasons.",
+              "response": "Who is Vivaldi?"
+            },
+            {
+              "value": 2000,
+              "clue": "This German composer kept writing even after going deaf, ending his ninth symphony with the Ode to Joy.",
+              "response": "Who is Beethoven?"
+            }
+          ]
+        },
+        {
+          "name": "SPORTS",
+          "clues": [
+            {
+              "value": 400,
+              "clue": "In this sport you score by shooting a ball through a hoop ten feet high.",
+              "response": "What is basketball?"
+            },
+            {
+              "value": 800,
+              "clue": "A soccer team fields this many players on the pitch.",
+              "response": "What is eleven?"
+            },
+            {
+              "value": 1200,
+              "clue": "The 2016 Summer Olympics were held in this country's city of Rio de Janeiro.",
+              "response": "What is Brazil?"
+            },
+            {
+              "value": 1600,
+              "clue": "The Tour de France is a multi-stage race in this sport.",
+              "response": "What is cycling?"
+            },
+            {
+              "value": 2000,
+              "clue": "Two strokes under par on a golf hole is called this bird-related term.",
+              "response": "What is an eagle?"
+            }
+          ]
+        },
+        {
+          "name": "INVENTIONS",
+          "clues": [
+            {
+              "value": 400,
+              "clue": "Alexander Graham Bell patented this device in 1876.",
+              "response": "What is the telephone?"
+            },
+            {
+              "value": 800,
+              "clue": "Tim Berners-Lee proposed this information system in 1989 while working at CERN.",
+              "response": "What is the World Wide Web?"
+            },
+            {
+              "value": 1200,
+              "clue": "Johannes Gutenberg is credited with bringing this machine to Europe in the 15th century.",
+              "response": "What is the printing press?",
+              "doubleDown": true
+            },
+            {
+              "value": 1600,
+              "clue": "The Wright brothers made their first powered flights near Kitty Hawk in this state.",
+              "response": "What is North Carolina?"
+            },
+            {
+              "value": 2000,
+              "clue": "This Italian astronomer used a telescope to discover four moons of Jupiter in 1610.",
+              "response": "Who is Galileo?"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "final": {
+    "category": "HISTORY",
+    "clue": "In 1893, this country became the first self-governing nation to give women the right to vote in national elections.",
+    "response": "What is New Zealand?"
+  }
+}

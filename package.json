@@ -1,0 +1,29 @@
+{
+  "name": "office-games",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @office-games/peril dev",
+    "emulators": "firebase emulators:start --only auth,database --project demo-office-games",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r --if-present test",
+    "test:rules": "firebase emulators:exec --only database --project demo-office-games \"vitest run --root firebase\"",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "deploy": "pnpm build && firebase deploy"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.8",
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "firebase": "^13.4.0",
+    "firebase-tools": "^15.37.0",
+    "typescript": "~5.9.3",
+    "vitest": "^5.1.1"
+  }
+}

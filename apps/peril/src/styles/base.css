@@ -1,0 +1,172 @@
+:root {
+  --blue: #0c2aa8;
+  --blue-bright: #1b3fd1;
+  --blue-dark: #07156f;
+  --blue-deep: #030b45;
+  --gold: #e8b24c;
+  --gold-light: #ffd877;
+  --ink: #040827;
+  --white: #fff;
+  --red: #ff6b6b;
+  --green: #5fe08a;
+  --font-value: "Anton", "Impact", "Arial Narrow", sans-serif;
+  --font-head: "Oswald", "Arial Narrow", sans-serif;
+  --font-clue: "Libre Baskerville", "Georgia", serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: radial-gradient(ellipse at top, #0a1a8f 0%, var(--blue-deep) 70%) fixed;
+  color: var(--white);
+  font-family: var(--font-ui);
+  line-height: 1.4;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-head);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 0.5rem;
+}
+
+a {
+  color: var(--gold-light);
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.wordmark {
+  font-family: var(--font-value);
+  color: var(--gold);
+  text-shadow: 0.06em 0.06em 0 #000;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.panel {
+  background: rgba(3, 11, 69, 0.75);
+  border: 2px solid var(--blue-bright);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.btn {
+  font: 600 1rem var(--font-head);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--gold);
+  color: var(--ink);
+  border: 0;
+  border-radius: 6px;
+  padding: 0.6rem 1.1rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn:hover:not(:disabled) {
+  background: var(--gold-light);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn.secondary {
+  background: transparent;
+  color: var(--white);
+  border: 2px solid var(--blue-bright);
+}
+.btn.secondary:hover:not(:disabled) {
+  background: var(--blue-dark);
+}
+.btn.good {
+  background: var(--green);
+}
+.btn.bad {
+  background: var(--red);
+}
+.btn.small {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.7rem;
+}
+
+input,
+select {
+  font: 1rem var(--font-ui);
+  background: var(--blue-deep);
+  color: var(--white);
+  border: 2px solid var(--blue-bright);
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+}
+input:focus-visible,
+select:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--gold-light);
+  outline-offset: 2px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.muted {
+  color: #aab4ee;
+}
+
+.error {
+  color: var(--red);
+}
+
+.stack > * + * {
+  margin-top: 1rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: must override inline animation delays */
+    animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must override inline animation delays */
+    animation-delay: 0s !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must override inline animation delays */
+    transition-duration: 0.01ms !important;
+  }
+}

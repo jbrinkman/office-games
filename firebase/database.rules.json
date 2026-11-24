@@ -1,0 +1,46 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "hosts": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "$code": { ".validate": "newData.isNumber()" }
+      }
+    },
+    "games": {
+      "$code": {
+        ".validate": "$code.matches(/^[A-HJ-NP-Z2-9]{6}$/)",
+        ".write": "auth != null && !newData.exists() && data.child('meta/hostUid').val() === auth.uid",
+        "meta": {
+          ".read": "auth != null && data.child('hostUid').val() === auth.uid",
+          ".write": "auth != null && newData.child('hostUid').val() === auth.uid && (!data.exists() || (data.child('hostUid').val() === auth.uid && data.child('expiresAt').val() > now))",
+          ".validate": "newData.hasChildren(['hostUid', 'expiresAt', 'ttlHours'])",
+          "hostUid": { ".validate": "newData.isString()" },
+          "expiresAt": {
+            ".validate": "newData.isNumber() && newData.val() > now && newData.val() <= now + 86400000 + 300000"
+          },
+          "ttlHours": {
+            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 24"
+          },
+          "$other": { ".validate": false }
+        },
+        "public": {
+          ".read": "root.child('games/' + $code + '/meta/expiresAt').val() > now",
+          ".write": "auth != null && root.child('games/' + $code + '/meta/hostUid').val() === auth.uid && root.child('games/' + $code + '/meta/expiresAt').val() > now",
+          "state": { ".validate": "newData.isString() && newData.val().length <= 60000" },
+          "$other": { ".validate": false }
+        },
+        "private": {
+          ".read": "auth != null && root.child('games/' + $code + '/meta/hostUid').val() === auth.uid && root.child('games/' + $code + '/meta/expiresAt').val() > now",
+          ".write": "auth != null && root.child('games/' + $code + '/meta/hostUid').val() === auth.uid && root.child('games/' + $code + '/meta/expiresAt').val() > now",
+          "gamefile": { ".validate": "newData.isString() && newData.val().length <= 200000" },
+          "final": { ".validate": "newData.isString() && newData.val().length <= 20000" },
+          "$other": { ".validate": false }
+        },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}
