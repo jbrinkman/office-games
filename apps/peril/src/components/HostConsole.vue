@@ -8,6 +8,7 @@ import FinishedDisplay from "./FinishedDisplay.vue"
 import GameBoard from "./GameBoard.vue"
 import HostClueControls from "./HostClueControls.vue"
 import HostFinalControls from "./HostFinalControls.vue"
+import IconButton from "./IconButton.vue"
 import ScoreBar from "./ScoreBar.vue"
 
 const props = defineProps<{ code: string; hostUid: string }>()
@@ -108,31 +109,40 @@ function canJudge(id: string): boolean {
         </div>
       </header>
 
-      <section class="panel stack share">
-        <div class="row">
-          <span class="share-label">Game code</span>
-          <strong class="game-code">{{ props.code }}</strong>
-          <button class="btn small" type="button" @click="copy('code')">
-            {{ copiedWhat === "code" ? "Copied" : "Copy code" }}
-          </button>
-        </div>
-        <div class="row">
-          <span class="share-label">Viewer link</span>
-          <code>{{ viewerUrl }}</code>
-          <button class="btn small" type="button" @click="copy('link')">
-            {{ copiedWhat === "link" ? "Copied" : "Copy link" }}
-          </button>
-          <a class="btn small secondary" :href="viewerUrl" target="_blank" rel="noopener">Open board</a>
-        </div>
+      <section class="panel share">
+        <label class="share-label" for="game-url">Game URL</label>
+        <input
+          id="game-url"
+          class="share-url"
+          type="text"
+          readonly
+          :value="viewerUrl"
+          @focus="($event.target as HTMLInputElement).select()"
+        />
+        <IconButton
+          :icon="copiedWhat === 'link' ? 'check' : 'copy'"
+          :label="copiedWhat === 'link' ? 'Copied' : 'Copy URL'"
+          :active="copiedWhat === 'link'"
+          @click="copy('link')"
+        />
+        <IconButton
+          :icon="copiedWhat === 'code' ? 'check' : 'hash'"
+          :label="copiedWhat === 'code' ? 'Copied' : `Copy code (${props.code})`"
+          :active="copiedWhat === 'code'"
+          @click="copy('code')"
+        />
+        <IconButton icon="open" label="Open board" :href="viewerUrl" />
+        <span class="spacer" />
+        <IconButton
+          icon="undo"
+          label="Undo"
+          :disabled="!game.canUndo.value"
+          @click="game.undo()"
+        />
+        <IconButton icon="trash" label="End game" tip-align="right" @click="endGame" />
         <span class="sr-only" role="status">
-          {{ copiedWhat === "code" ? "Game code copied" : copiedWhat === "link" ? "Viewer link copied" : "" }}
+          {{ copiedWhat === "code" ? "Game code copied" : copiedWhat === "link" ? "Game URL copied" : "" }}
         </span>
-        <div class="row">
-        <button class="btn small secondary" type="button" :disabled="!game.canUndo.value" @click="game.undo()">
-          Undo
-        </button>
-        <button class="btn small secondary" type="button" @click="endGame">End game</button>
-        </div>
       </section>
 
       <p v-if="notice" class="error" role="alert">{{ notice }}</p>
@@ -239,22 +249,27 @@ function canJudge(id: string): boolean {
   color: var(--gold);
   text-transform: uppercase;
 }
+.share {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+}
 .share-label {
-  min-width: 6.5rem;
+  margin: 0;
   font-weight: 600;
+  white-space: nowrap;
 }
-.game-code {
-  font: 400 1.8rem var(--font-value);
-  letter-spacing: 0.15em;
-  color: var(--gold-light);
+.share-url {
+  flex: 0 1 30rem;
+  min-width: 10rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9rem;
   user-select: all;
 }
-.share code {
-  user-select: all;
-  background: var(--blue-deep);
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  word-break: break-all;
+.spacer {
+  flex: 1 1 0;
 }
 .clue-wrap {
   max-width: 900px;
