@@ -54,7 +54,13 @@ export function useAuth() {
     /** True only for accounts on the allowlist. The database rules enforce this too. */
     canHost: computed(() => access.value === "allowed"),
     checkingAccess: computed(() => access.value === "checking"),
-    signIn: () => signInWithPopup(auth, new GoogleAuthProvider()),
+    signIn: () => {
+      const provider = new GoogleAuthProvider()
+      // Always show Google's account chooser, so a wrong account can be swapped without
+      // signing out of Google first.
+      provider.setCustomParameters({ prompt: "select_account" })
+      return signInWithPopup(auth, provider)
+    },
     signOut: () => firebaseSignOut(auth),
   }
 }

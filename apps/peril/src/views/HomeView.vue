@@ -78,12 +78,16 @@ function timeLeft(expiresAt: number): string {
           {{ user.email }} is not on the Host list. Ask an admin to add it, or sign in with a
           different Google account.
         </p>
-        <div><button class="btn secondary" type="button" @click="signOut()">Sign out</button></div>
+        <div class="row">
+          <button class="btn" type="button" @click="handleSignIn">Use a different account</button>
+          <button class="btn secondary" type="button" @click="signOut()">Sign out</button>
+        </div>
       </template>
       <template v-else>
         <p class="muted">Signed in as {{ user.displayName ?? user.email }}.</p>
         <div class="row">
           <RouterLink class="btn" to="/host/new">New game</RouterLink>
+          <button class="btn secondary" type="button" @click="handleSignIn">Switch account</button>
           <button class="btn secondary" type="button" @click="signOut()">Sign out</button>
         </div>
         <div v-if="myGames.length">

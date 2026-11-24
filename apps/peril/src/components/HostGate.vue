@@ -19,7 +19,8 @@ const { user, ready, canHost, checkingAccess, signIn, signOut } = useAuth()
       Google account.
     </p>
     <div class="row">
-      <button class="btn" type="button" @click="signOut()">Sign out</button>
+      <button class="btn" type="button" @click="signIn()">Use a different account</button>
+      <button class="btn secondary" type="button" @click="signOut()">Sign out</button>
       <RouterLink class="btn secondary" to="/">Home</RouterLink>
     </div>
   </main>
