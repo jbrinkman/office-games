@@ -1,3 +1,11 @@
 packages:
   - apps/*
   - packages/*
+
+# Dependency build scripts we have reviewed and chosen not to run.
+# @firebase/util and protobufjs only print notices or check versions; re2 is an optional
+# native accelerator for firebase-tools that falls back to a JS implementation.
+allowBuilds:
+  "@firebase/util": false
+  protobufjs: false
+  re2: false

@@ -16,7 +16,7 @@ jobs:
           node-version: 24
           cache: pnpm
       # The Realtime Database emulator used by the rules tests needs Java.
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
