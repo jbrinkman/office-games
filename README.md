@@ -62,21 +62,35 @@ To add a bundled game, drop the file in `apps/peril/public/games/` and list it i
 
 ## Deploying (Firebase Spark plan, no cost)
 
-The app is static files plus Firebase Realtime Database, so there is no server to run. The Spark plan needs no payment method.
+The app is static files plus Firebase Realtime Database, so there is no server to run. The Spark plan needs no payment method. Setup is done once. After that, publishing a change is a single command.
+
+### One-time setup
 
 1. Create a Firebase project in the [console](https://console.firebase.google.com).
 2. Build > Authentication > Sign-in method: enable **Google**.
-3. Build > Realtime Database: create a database (locked mode is fine, the rules are deployed below).
+3. Build > Realtime Database: create a database (locked mode is fine, the rules are deployed with the app).
 4. Project settings > Your apps: add a **Web app** and copy its config.
-5. Copy `apps/peril/.env.example` to `apps/peril/.env.production.local` and fill in the values. They identify your project and are not secrets.
-6. Select your project (`pnpm exec firebase use --add`, which creates a local `.firebaserc` that is not committed), then:
+5. Copy `apps/peril/.env.example` to `apps/peril/.env.production.local` and fill in the values. They identify your project and are not secrets. The file is gitignored, so it stays on your machine.
+6. Sign in to the Firebase CLI and select your project. This creates a local `.firebaserc` that is not committed:
 
 ```sh
 pnpm exec firebase login
-pnpm deploy   # builds, then deploys Hosting and the database rules
+pnpm exec firebase use --add
 ```
 
-Add your hosting domain under Authentication > Settings > Authorized domains if it is not listed.
+If your hosting domain is not already listed, add it under Authentication > Settings > Authorized domains. Firebase normally includes the default `*.web.app` domain.
+
+### Deploying changes
+
+Run this each time you want to publish code, rules, or bundled Gamefile changes:
+
+```sh
+pnpm deploy
+```
+
+It builds the app, then uploads the static files to Firebase Hosting and releases `firebase/database.rules.json` to the database. Nothing is deployed automatically. Pushing to GitHub only runs the CI checks, so the live site stays on the old version until you run `pnpm deploy`.
+
+Run `pnpm lint && pnpm typecheck && pnpm test && pnpm test:rules` first if you want the same checks CI runs.
 
 ### Limits to know about
 
