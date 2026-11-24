@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { extractGameCode } from "@office-games/shared"
 import { computed, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { useAuth } from "../services/auth.ts"
-import { isValidCode, listAndSweepHostGames, normalizeCode } from "../services/games.ts"
+import { isValidCode, listAndSweepHostGames } from "../services/games.ts"
 
 const router = useRouter()
 const { user, ready, canHost, checkingAccess, signIn, signOut } = useAuth()
@@ -20,7 +21,7 @@ watch(
   { immediate: true },
 )
 
-const joinCode = computed(() => normalizeCode(codeInput.value))
+const joinCode = computed(() => extractGameCode(codeInput.value))
 
 function join() {
   if (!isValidCode(joinCode.value)) {
@@ -56,8 +57,8 @@ function timeLeft(expiresAt: number): string {
     <section class="panel stack">
       <h2>Join a game</h2>
       <form class="row" @submit.prevent="join">
-        <label class="sr-only" for="code">Game code</label>
-        <input id="code" v-model="codeInput" placeholder="Game code" maxlength="12" autocomplete="off" />
+        <label class="sr-only" for="code">Game code or viewer link</label>
+        <input id="code" v-model="codeInput" placeholder="Game code or link" maxlength="200" autocomplete="off" />
         <button class="btn" type="submit">Watch</button>
       </form>
       <p v-if="joinError" class="error" role="alert">{{ joinError }}</p>

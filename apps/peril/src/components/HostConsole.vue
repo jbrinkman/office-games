@@ -14,7 +14,8 @@ const props = defineProps<{ code: string; hostUid: string }>()
 const router = useRouter()
 const game = useHostGame(props.code, props.hostUid)
 const { state, gamefile, status, notice } = game
-const copied = ref(false)
+const copiedWhat = ref<"code" | "link" | null>(null)
+let copiedTimer: ReturnType<typeof setTimeout> | undefined
 
 onMounted(() => game.load())
 
@@ -46,12 +47,17 @@ const clueContext = computed(() => {
   return { clue, categoryName: s.categories[c.categoryIndex]?.name ?? "" }
 })
 
-async function copyLink() {
-  await navigator.clipboard.writeText(viewerUrl.value)
-  copied.value = true
-  setTimeout(() => {
-    copied.value = false
-  }, 2000)
+async function copy(what: "code" | "link") {
+  try {
+    await navigator.clipboard.writeText(what === "code" ? props.code : viewerUrl.value)
+    copiedWhat.value = what
+    clearTimeout(copiedTimer)
+    copiedTimer = setTimeout(() => {
+      copiedWhat.value = null
+    }, 2000)
+  } catch {
+    game.notice.value = "Could not copy automatically. Select the text and copy it instead."
+  }
 }
 
 function advance() {
@@ -102,16 +108,31 @@ function canJudge(id: string): boolean {
         </div>
       </header>
 
-      <section class="panel row share">
-        <span>Viewer link</span>
-        <code>{{ viewerUrl }}</code>
-        <button class="btn small" type="button" @click="copyLink">{{ copied ? "Copied" : "Copy" }}</button>
-        <a class="btn small secondary" :href="viewerUrl" target="_blank" rel="noopener">Open board</a>
-        <span class="spacer" />
+      <section class="panel stack share">
+        <div class="row">
+          <span class="share-label">Game code</span>
+          <strong class="game-code">{{ props.code }}</strong>
+          <button class="btn small" type="button" @click="copy('code')">
+            {{ copiedWhat === "code" ? "Copied" : "Copy code" }}
+          </button>
+        </div>
+        <div class="row">
+          <span class="share-label">Viewer link</span>
+          <code>{{ viewerUrl }}</code>
+          <button class="btn small" type="button" @click="copy('link')">
+            {{ copiedWhat === "link" ? "Copied" : "Copy link" }}
+          </button>
+          <a class="btn small secondary" :href="viewerUrl" target="_blank" rel="noopener">Open board</a>
+        </div>
+        <span class="sr-only" role="status">
+          {{ copiedWhat === "code" ? "Game code copied" : copiedWhat === "link" ? "Viewer link copied" : "" }}
+        </span>
+        <div class="row">
         <button class="btn small secondary" type="button" :disabled="!game.canUndo.value" @click="game.undo()">
           Undo
         </button>
         <button class="btn small secondary" type="button" @click="endGame">End game</button>
+        </div>
       </section>
 
       <p v-if="notice" class="error" role="alert">{{ notice }}</p>
@@ -218,14 +239,22 @@ function canJudge(id: string): boolean {
   color: var(--gold);
   text-transform: uppercase;
 }
+.share-label {
+  min-width: 6.5rem;
+  font-weight: 600;
+}
+.game-code {
+  font: 400 1.8rem var(--font-value);
+  letter-spacing: 0.15em;
+  color: var(--gold-light);
+  user-select: all;
+}
 .share code {
+  user-select: all;
   background: var(--blue-deep);
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
   word-break: break-all;
-}
-.spacer {
-  flex: 1;
 }
 .clue-wrap {
   max-width: 900px;
