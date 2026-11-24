@@ -48,63 +48,9 @@ async function seed(hoursLeft = 6) {
   })
 }
 
-const asUser = (uid: string, email: string, verified = true) =>
-  env.authenticatedContext(uid, { email, email_verified: verified }).database()
-
-const host = () => asUser("host1", "host@improving.com")
-const other = () => asUser("someone-else", "other@improving.com")
+const host = () => env.authenticatedContext("host1").database()
+const other = () => env.authenticatedContext("someone-else").database()
 const viewer = () => env.unauthenticatedContext().database()
-
-describe("who can host", () => {
-  const create = (db: ReturnType<typeof host>) =>
-    set(ref(db, `games/${CODE}/meta`), meta("outsider"))
-
-  it("accepts a verified improving.com account, in any letter case", async () => {
-    await assertSucceeds(
-      set(ref(asUser("u1", "Jo.Smith@Improving.COM"), `games/${CODE}/meta`), meta("u1")),
-    )
-  })
-
-  it("rejects a signed-in account from another domain", async () => {
-    await assertFails(
-      set(ref(asUser("outsider", "x@gmail.com"), `games/${CODE}/meta`), meta("outsider")),
-    )
-  })
-
-  it("rejects an improving.com address that is not verified", async () => {
-    await assertFails(
-      set(
-        ref(asUser("outsider", "x@improving.com", false), `games/${CODE}/meta`),
-        meta("outsider"),
-      ),
-    )
-  })
-
-  it("rejects lookalike domains", async () => {
-    for (const email of [
-      "x@notimproving.com",
-      "x@improving.com.evil.io",
-      "x@evil.io@improving.com",
-    ]) {
-      await assertFails(set(ref(asUser("outsider", email), `games/${CODE}/meta`), meta("outsider")))
-    }
-  })
-
-  it("rejects an account with no email claim", async () => {
-    await assertFails(create(env.authenticatedContext("outsider").database()))
-  })
-
-  it("keeps outsiders from the Host game list", async () => {
-    await assertFails(
-      set(ref(asUser("outsider", "x@gmail.com"), `hosts/outsider/${CODE}`), Date.now() + HOUR),
-    )
-  })
-
-  it("still lets any Viewer watch without signing in", async () => {
-    await seed()
-    await assertSucceeds(get(ref(viewer(), `games/${CODE}/public`)))
-  })
-})
 
 describe("creating a game", () => {
   it("lets a signed-in Host claim a free code", async () => {

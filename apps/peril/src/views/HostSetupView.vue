@@ -9,12 +9,11 @@ import {
 } from "@office-games/shared"
 import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
-import HostGate from "../components/HostGate.vue"
 import { useAuth } from "../services/auth.ts"
 import { createGameRecord, MAX_GAMEFILE_CHARS } from "../services/games.ts"
 
 const router = useRouter()
-const { user } = useAuth()
+const { user, ready, signIn } = useAuth()
 
 const bundled = ref<{ file: string; title: string }[]>([])
 const gamefile = ref<Gamefile | null>(null)
@@ -105,11 +104,16 @@ async function create() {
 </script>
 
 <template>
-  <HostGate title="New game">
   <main class="page stack">
     <h1 class="wordmark">New game</h1>
 
-    <form class="stack" @submit.prevent="create">
+    <section v-if="!ready" class="panel">Checking sign-in...</section>
+    <section v-else-if="!user" class="panel stack">
+      <p>Sign in with Google to host a game.</p>
+      <div><button class="btn" type="button" @click="signIn()">Sign in with Google</button></div>
+    </section>
+
+    <form v-else class="stack" @submit.prevent="create">
       <section class="panel stack">
         <h2>1. Choose a Gamefile</h2>
         <div v-if="bundled.length">
@@ -178,5 +182,4 @@ async function create() {
       </div>
     </form>
   </main>
-  </HostGate>
 </template>
