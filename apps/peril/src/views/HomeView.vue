@@ -5,7 +5,7 @@ import { useAuth } from "../services/auth.ts"
 import { isValidCode, listAndSweepHostGames, normalizeCode } from "../services/games.ts"
 
 const router = useRouter()
-const { user, ready, signIn, signOut } = useAuth()
+const { user, ready, canHost, hostDomain, signIn, signOut } = useAuth()
 
 const codeInput = ref("")
 const joinError = ref("")
@@ -13,7 +13,7 @@ const myGames = ref<{ code: string; expiresAt: number }[]>([])
 const signInError = ref("")
 
 watch(
-  () => user.value?.uid,
+  () => (canHost.value ? user.value?.uid : undefined),
   async (uid) => {
     myGames.value = uid ? await listAndSweepHostGames(uid).catch(() => []) : []
   },
@@ -67,11 +67,20 @@ function timeLeft(expiresAt: number): string {
       <h2>Host a game</h2>
       <p v-if="!ready" class="muted">Checking sign-in...</p>
       <template v-else-if="!user">
-        <p class="muted">Hosts sign in with Google. Viewers do not need to sign in.</p>
+        <p class="muted">
+          Hosts sign in with their {{ hostDomain }} Google account. Viewers do not need to sign in.
+        </p>
         <div>
           <button class="btn" type="button" @click="handleSignIn">Sign in with Google</button>
         </div>
         <p v-if="signInError" class="error" role="alert">{{ signInError }}</p>
+      </template>
+      <template v-else-if="!canHost">
+        <p class="error" role="alert">
+          Hosting is limited to verified {{ hostDomain }} accounts. You are signed in as
+          {{ user.email }}.
+        </p>
+        <div><button class="btn secondary" type="button" @click="signOut()">Sign out</button></div>
       </template>
       <template v-else>
         <p class="muted">Signed in as {{ user.displayName ?? user.email }}.</p>

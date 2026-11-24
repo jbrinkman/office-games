@@ -8,7 +8,7 @@ The first game is **Peril!**, a quiz game in the style of the classic TV quiz sh
 
 ## How a game works
 
-1. The Host signs in with Google, loads a Gamefile (or picks the bundled sample), and adds 2 to 6 Contestants.
+1. The Host signs in with a Google account from the allowed domain (`improving.com`), loads a Gamefile (or picks the bundled sample), and adds 2 to 6 Contestants.
 2. The app gives the Host a game URL such as `https://your-site.web.app/g/K7M2QX`. Anyone with the link can watch the board and scores live. No sign-in is needed.
 3. The Host runs the game from a private console: picking Clues, revealing Responses, judging them correct or wrong, setting Double Down wagers, and running Final Peril.
 
@@ -37,7 +37,7 @@ pnpm emulators   # terminal 1: Firebase Auth + Realtime Database emulators
 pnpm dev         # terminal 2: the app at http://localhost:5173
 ```
 
-Development runs entirely against the local emulators, so you do not need a Firebase project. Choose "Sign in with Google" and the emulator offers a fake account. Open the Viewer link in a second browser profile to see both sides.
+Development runs entirely against the local emulators, so you do not need a Firebase project. Choose "Sign in with Google", then "Add new account" in the emulator popup, and enter an email ending in `@improving.com` (the emulator accepts any address). Open the Viewer link in a second browser profile to see both sides.
 
 Other commands:
 
@@ -97,12 +97,19 @@ Run `pnpm lint && pnpm typecheck && pnpm test && pnpm test:rules` first if you w
 - Spark allows **100 simultaneous connections** for the whole project (one per open browser tab), plus 10 GB of database downloads per month.
 - Games expire after the lifetime the Host picks (1 to 24 hours, default 6) since the last Host action. Security rules refuse access to an expired game. There is no server to clean up, so the data is deleted the next time that Host opens the app or ends the game.
 
+### Who can host
+
+Hosting is limited to Google accounts with a verified email in one domain, set to `improving.com`. Viewers never sign in. To use a different domain in a fork, change it in both places, and a test fails if they drift apart:
+
+- `packages/shared/src/hosting.ts` (`HOST_EMAIL_DOMAIN`)
+- the `improving\\.com` pattern in `firebase/database.rules.json`
+
 ### Security model
 
 There is no server code, so [`firebase/database.rules.json`](./firebase/database.rules.json) is the security boundary:
 
 - Anyone can read a game's public state if they know its unguessable 6 character code. Nobody can list games.
-- Only the signed-in Host who created a game can write to it.
+- Only a signed-in Host with a verified `improving.com` email can create a game, and only that Host can write to it. The rules check the email domain, so the app's sign-in screen is a convenience, not the control.
 - Unrevealed Responses and Final Peril entries live in a Host-only path. Viewers cannot read them.
 
 See [docs/adr](./docs/adr) for why the app is built this way.
