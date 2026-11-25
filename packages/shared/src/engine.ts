@@ -25,6 +25,7 @@ function boardFor(gamefile: Gamefile, roundIndex: number): GameState["categories
   const round = gamefile.rounds[roundIndex] ?? fail("That round does not exist.")
   return round.categories.map((category) => ({
     name: category.name,
+    hint: category.hint ?? null,
     cells: category.clues.map((clue) => ({ value: clue.value, used: false })),
   }))
 }
@@ -43,16 +44,38 @@ export function createGame(gamefile: Gamefile, contestantNames: string[]): GameS
   return {
     version: 1,
     title: gamefile.title,
-    phase: "board",
+    phase: "intro",
     roundIndex: 0,
     roundCount: gamefile.rounds.length,
     hasFinal: gamefile.final !== undefined,
     contestants: names.map((name, i) => ({ id: `c${i + 1}`, name, score: 0 })),
     activeContestantId: null,
     categories: boardFor(gamefile, 0),
+    intro: { revealed: 0 },
     current: null,
     final: null,
   }
+}
+
+/** Reveal the next category name (and its hint) during the start-of-round introduction. */
+export function revealNextCategory(state: GameState): GameState {
+  if (state.phase !== "intro" || !state.intro)
+    fail("There is no category introduction to continue.")
+  if (state.intro.revealed >= state.categories.length) {
+    fail("Every category has already been revealed.")
+  }
+  const next = clone(state)
+  next.intro = { revealed: state.intro.revealed + 1 }
+  return next
+}
+
+/** End the introduction (even early) and open the board for play. */
+export function startRound(state: GameState): GameState {
+  if (state.phase !== "intro") fail("The round has already started.")
+  const next = clone(state)
+  next.phase = "board"
+  next.intro = null
+  return next
 }
 
 function contestantOf(state: GameState, id: string) {
@@ -219,6 +242,8 @@ export function advanceFromBoard(state: GameState, gamefile: Gamefile): GameStat
   if (state.roundIndex + 1 < state.roundCount) {
     next.roundIndex = state.roundIndex + 1
     next.categories = boardFor(gamefile, next.roundIndex)
+    next.phase = "intro"
+    next.intro = { revealed: 0 }
     next.activeContestantId = lowestScoreContestantId(state)
     return next
   }

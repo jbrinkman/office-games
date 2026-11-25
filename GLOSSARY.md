@@ -50,6 +50,14 @@ _Avoid_: Jeopardy round, round one
 The second round, with the same board shape and doubled Clue values.
 _Avoid_: Double Jeopardy round, round two
 
+**Category reveal**:
+The start of each round, when the Host uncovers the category names one at a time, left to right, before any Clue is played.
+_Avoid_: Category intro, board reveal
+
+**Hint**:
+An optional short description of a category, shown to Viewers and read aloud by the Host during the Category reveal.
+_Avoid_: Description, subtitle, tooltip
+
 **Double Down**:
 A hidden Clue where the Active Contestant wagers on their own Response instead of playing for the Clue's value.
 _Avoid_: Daily Double, wager clue

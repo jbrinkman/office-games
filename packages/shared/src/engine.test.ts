@@ -17,11 +17,13 @@ import {
   parseState,
   revealFinalCorrectResponse,
   revealFinalEntry,
+  revealNextCategory,
   revealResponse,
   selectClue,
   serializeState,
   setActiveContestant,
   setDoubleDownWager,
+  startRound,
   winners,
 } from "./index.ts"
 
@@ -30,7 +32,9 @@ const parsed = parseGamefile(
 )
 if (!parsed.ok) throw new Error(parsed.errors.join("\n"))
 const gamefile: Gamefile = parsed.gamefile
-const start = () => createGame(gamefile, ["Ana", "Ben", "Cy"])
+const intro = () => createGame(gamefile, ["Ana", "Ben", "Cy"])
+/** A game with the category introduction already finished. */
+const start = () => startRound(intro())
 
 describe("createGame", () => {
   it("builds the first board with zero scores", () => {
@@ -45,6 +49,54 @@ describe("createGame", () => {
     expect(() => createGame(gamefile, ["A", "B", "C", "D", "E", "F", "G"])).toThrow(GameError)
     expect(() => createGame(gamefile, ["Ana", "ana"])).toThrow(GameError)
     expect(() => createGame(gamefile, ["Ana", " "])).toThrow(GameError)
+  })
+})
+
+describe("category introduction", () => {
+  it("starts every game in the introduction with nothing revealed", () => {
+    const state = intro()
+    expect(state.phase).toBe("intro")
+    expect(state.intro).toEqual({ revealed: 0 })
+    expect(() => selectClue(state, gamefile, 0, 0)).toThrow(GameError)
+  })
+
+  it("carries each category's hint, or null when it has none", () => {
+    const hints = intro().categories.map((c) => c.hint)
+    expect(hints.some((h) => h !== null)).toBe(true)
+    expect(hints.some((h) => h === null)).toBe(true)
+  })
+
+  it("reveals one category at a time and stops at the last one", () => {
+    let state = intro()
+    for (let i = 1; i <= state.categories.length; i++) {
+      state = revealNextCategory(state)
+      expect(state.intro?.revealed).toBe(i)
+    }
+    expect(() => revealNextCategory(state)).toThrow(GameError)
+  })
+
+  it("opens the board when started, even before every category is revealed", () => {
+    const state = startRound(revealNextCategory(intro()))
+    expect(state.phase).toBe("board")
+    expect(state.intro).toBeNull()
+    expect(() => revealNextCategory(state)).toThrow(GameError)
+    expect(() => startRound(state)).toThrow(GameError)
+  })
+
+  it("introduces the next round after the board is advanced", () => {
+    const state = advanceFromBoard(start(), gamefile)
+    expect(state.phase).toBe("intro")
+    expect(state.intro).toEqual({ revealed: 0 })
+    expect(state.roundIndex).toBe(1)
+  })
+
+  it("still reads a state saved before hints and introductions existed", () => {
+    const legacy = JSON.parse(serializeState(start()))
+    legacy.intro = undefined
+    for (const category of legacy.categories) category.hint = undefined
+    const state = parseState(JSON.stringify(legacy))
+    expect(state?.intro).toBeNull()
+    expect(state?.categories[0]?.hint).toBeNull()
   })
 })
 
@@ -137,7 +189,7 @@ describe("Double Down", () => {
 })
 
 function playOutBoard(state: ReturnType<typeof start>) {
-  let next = state
+  let next = state.phase === "intro" ? startRound(state) : state
   for (let c = 0; c < next.categories.length; c++) {
     for (let i = 0; i < 5; i++) {
       next = closeClue(selectClue(next, gamefile, c, i))
@@ -154,6 +206,7 @@ describe("rounds", () => {
     expect(isBoardCleared(state)).toBe(true)
     state = advanceFromBoard(state, gamefile)
     expect(state.roundIndex).toBe(1)
+    expect(state.phase).toBe("intro")
     expect(state.categories[0]?.cells[0]?.value).toBe(400)
     expect(state.activeContestantId).toBe("c2")
   })
