@@ -16,3 +16,6 @@ docs/reference/
 
 # Per-developer Firebase project selection
 .firebaserc
+
+# Private Improving AI Gamefiles (not for check-in)
+gamefiles/
