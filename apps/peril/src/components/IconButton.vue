@@ -9,6 +9,8 @@ export type IconName =
   | "next"
   | "skip"
   | "play"
+  | "expand"
+  | "shrink"
 
 defineProps<{
   icon: IconName
@@ -70,6 +72,12 @@ defineProps<{
       </template>
       <template v-else-if="icon === 'skip'">
         <path d="m5 5 7 7-7 7M13 5l7 7-7 7" />
+      </template>
+      <template v-else-if="icon === 'expand'">
+        <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+      </template>
+      <template v-else-if="icon === 'shrink'">
+        <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
       </template>
       <template v-else-if="icon === 'play'">
         <path d="M7 4v16l13-8z" />

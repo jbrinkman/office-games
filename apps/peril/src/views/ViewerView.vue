@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ROUND_NAMES, winners } from "@office-games/shared"
-import { computed } from "vue"
+import { computed, onBeforeUnmount, onMounted, ref } from "vue"
 import CategoryBanner from "../components/CategoryBanner.vue"
 import ClueDisplay from "../components/ClueDisplay.vue"
 import FinalDisplay from "../components/FinalDisplay.vue"
 import FinishedDisplay from "../components/FinishedDisplay.vue"
 import GameBoard from "../components/GameBoard.vue"
+import IconButton from "../components/IconButton.vue"
 import ScoreBar from "../components/ScoreBar.vue"
 import { useViewerGame } from "../composables/useViewerGame.ts"
 import { normalizeCode } from "../services/games.ts"
@@ -42,6 +43,24 @@ const intro = computed(() => {
 })
 const isBoardLike = computed(() => ["intro", "board", "clue"].includes(state.value?.phase ?? ""))
 
+/** Fullscreen needs a browser that allows it (iPhone Safari does not), so the button hides otherwise. */
+const canFullscreen = document.fullscreenEnabled
+const isFullscreen = ref(document.fullscreenElement !== null)
+const syncFullscreen = () => {
+  isFullscreen.value = document.fullscreenElement !== null
+}
+onMounted(() => document.addEventListener("fullscreenchange", syncFullscreen))
+onBeforeUnmount(() => document.removeEventListener("fullscreenchange", syncFullscreen))
+
+async function toggleFullscreen() {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen()
+    else await document.documentElement.requestFullscreen()
+  } catch {
+    /* the browser refused; nothing to do */
+  }
+}
+
 const highlight = computed(() => (state.value?.phase === "finished" ? winners(state.value) : []))
 </script>
 
@@ -59,7 +78,16 @@ const highlight = computed(() => (state.value?.phase === "finished" ? winners(st
       <header>
         <span class="wordmark brand">Peril!</span>
         <span class="title">{{ state.title }}</span>
-        <span v-if="isBoardLike" class="round">{{ roundLabel }}</span>
+        <div class="actions">
+          <span v-if="isBoardLike" class="round">{{ roundLabel }}</span>
+          <IconButton
+            v-if="canFullscreen"
+            :icon="isFullscreen ? 'shrink' : 'expand'"
+            :label="isFullscreen ? 'Exit full screen' : 'Full screen'"
+            tip-align="right"
+            @click="toggleFullscreen"
+          />
+        </div>
       </header>
 
       <section class="stage" :class="{ 'fit-board': isBoardLike }">
@@ -129,8 +157,13 @@ header {
   text-transform: uppercase;
   color: #cdd6ff;
 }
-.round {
+.actions {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.round {
   font: 400 1.6rem var(--font-value);
   color: var(--gold);
   text-shadow: 0.06em 0.06em 0 #000;
