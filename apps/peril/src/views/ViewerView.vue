@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ROUND_NAMES, winners } from "@office-games/shared"
 import { computed } from "vue"
+import CategoryBanner from "../components/CategoryBanner.vue"
 import ClueDisplay from "../components/ClueDisplay.vue"
 import FinalDisplay from "../components/FinalDisplay.vue"
 import FinishedDisplay from "../components/FinishedDisplay.vue"
@@ -31,6 +32,16 @@ const zoomOrigin = computed(() => {
   return `${x}% ${y}%`
 })
 
+const intro = computed(() => {
+  const s = state.value
+  if (s?.phase !== "intro" || !s.intro || s.intro.revealed < 1) return null
+  const index = s.intro.revealed - 1
+  const category = s.categories[index]
+  if (!category) return null
+  return { index, name: category.name, hint: category.hint, total: s.categories.length }
+})
+const isBoardLike = computed(() => ["intro", "board", "clue"].includes(state.value?.phase ?? ""))
+
 const highlight = computed(() => (state.value?.phase === "finished" ? winners(state.value) : []))
 </script>
 
@@ -48,12 +59,24 @@ const highlight = computed(() => (state.value?.phase === "finished" ? winners(st
       <header>
         <span class="wordmark brand">Peril!</span>
         <span class="title">{{ state.title }}</span>
-        <span v-if="state.phase === 'board' || state.phase === 'clue'" class="round">{{ roundLabel }}</span>
+        <span v-if="isBoardLike" class="round">{{ roundLabel }}</span>
       </header>
 
-      <section class="stage" :class="{ 'fit-board': state.phase === 'board' || state.phase === 'clue' }">
-        <template v-if="state.phase === 'board' || state.phase === 'clue'">
-          <GameBoard :key="state.roundIndex" :categories="state.categories" />
+      <section class="stage" :class="{ 'fit-board': isBoardLike }">
+        <template v-if="isBoardLike">
+          <GameBoard
+            :key="state.roundIndex"
+            :categories="state.categories"
+            :intro-revealed="state.phase === 'intro' ? (state.intro?.revealed ?? 0) : null"
+          />
+          <div v-if="intro" :key="intro.index" class="intro-overlay">
+            <CategoryBanner
+              :name="intro.name"
+              :hint="intro.hint"
+              :position="intro.index + 1"
+              :total="intro.total"
+            />
+          </div>
           <div
             v-if="current"
             :key="`${current.categoryIndex}-${current.clueIndex}`"
@@ -126,6 +149,24 @@ header {
   inset: 0;
   z-index: 5;
   animation: zoom-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.intro-overlay {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 6%;
+  z-index: 5;
+  animation: rise-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes rise-in {
+  from {
+    transform: translateY(30%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
 @keyframes zoom-in {
   from {

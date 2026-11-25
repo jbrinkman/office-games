@@ -33,6 +33,11 @@
                   "minLength": 1,
                   "maxLength": 60
                 },
+                "hint": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
                 "clues": {
                   "minItems": 5,
                   "maxItems": 5,

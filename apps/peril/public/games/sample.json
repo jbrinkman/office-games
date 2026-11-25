@@ -37,6 +37,7 @@
         },
         {
           "name": "WORLD CAPITALS",
+          "hint": "Every country has one. Name the city where the government sits.",
           "clues": [
             {
               "value": 200,
@@ -128,6 +129,7 @@
         },
         {
           "name": "OFFICE LIFE",
+          "hint": "Meetings, memos, and the break room: life at the office.",
           "clues": [
             {
               "value": 200,
@@ -222,6 +224,7 @@
         },
         {
           "name": "MOVIES",
+          "hint": "Lights, camera, action! These clues are all about the big screen.",
           "clues": [
             {
               "value": 400,

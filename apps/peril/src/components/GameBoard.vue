@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import type { BoardCategory } from "@office-games/shared"
 
-defineProps<{ categories: BoardCategory[]; clickable?: boolean }>()
+const props = defineProps<{
+  categories: BoardCategory[]
+  clickable?: boolean
+  /** During the introduction, how many category names are revealed. Null shows every name. */
+  introRevealed?: number | null
+}>()
 const emit = defineEmits<{ select: [categoryIndex: number, clueIndex: number] }>()
+
+const isHidden = (c: number) => props.introRevealed != null && c >= props.introRevealed
+const isLatest = (c: number) => props.introRevealed != null && c === props.introRevealed - 1
 
 /** A scattered, repeatable delay so cells "fill in" across the board at the start of a round. */
 function fillDelay(col: number, row: number): string {
@@ -18,9 +26,10 @@ function fillDelay(col: number, row: number): string {
         v-for="(category, c) in categories"
         :key="`h${c}`"
         class="category"
+        :class="{ latest: isLatest(c) }"
         :style="{ gridColumn: c + 1, gridRow: 1, animationDelay: `${c * 80}ms` }"
       >
-        <span>{{ category.name }}</span>
+        <span v-if="!isHidden(c)" class="name">{{ category.name }}</span>
       </div>
       <template v-for="(category, c) in categories" :key="`c${c}`">
         <button
@@ -30,8 +39,14 @@ function fillDelay(col: number, row: number): string {
           class="cell"
           :class="{ used: cell.used }"
           :style="{ gridColumn: c + 1, gridRow: r + 2, animationDelay: fillDelay(c, r) }"
-          :disabled="!clickable || cell.used"
-          :aria-label="cell.used ? `${category.name}, played` : `${category.name} for ${cell.value}`"
+          :disabled="!clickable || cell.used || isHidden(c)"
+          :aria-label="
+            isHidden(c)
+              ? `Category ${c + 1}, not yet revealed`
+              : cell.used
+                ? `${category.name}, played`
+                : `${category.name} for ${cell.value}`
+          "
           @click="emit('select', c, r)"
         >
           <span v-if="!cell.used">${{ cell.value }}</span>
@@ -96,6 +111,14 @@ function fillDelay(col: number, row: number): string {
   overflow: hidden;
 }
 
+.category.latest {
+  filter: brightness(1.4);
+  box-shadow: inset 0 0 0 0.25cqw var(--gold);
+}
+.name {
+  animation: name-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
 .cell {
   appearance: none;
   border: 0;
@@ -117,6 +140,17 @@ function fillDelay(col: number, row: number): string {
 }
 .cell.used {
   background: #071a85;
+}
+
+@keyframes name-in {
+  from {
+    opacity: 0;
+    transform: perspective(40cqw) rotateX(90deg) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(40cqw) rotateX(0) scale(1);
+  }
 }
 
 @keyframes fill-in {

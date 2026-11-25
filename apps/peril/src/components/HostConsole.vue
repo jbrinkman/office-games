@@ -8,6 +8,7 @@ import FinishedDisplay from "./FinishedDisplay.vue"
 import GameBoard from "./GameBoard.vue"
 import HostClueControls from "./HostClueControls.vue"
 import HostFinalControls from "./HostFinalControls.vue"
+import HostIntroControls from "./HostIntroControls.vue"
 import IconButton from "./IconButton.vue"
 import ScoreBar from "./ScoreBar.vue"
 
@@ -102,7 +103,7 @@ function canJudge(id: string): boolean {
           <span class="muted title"> {{ state.title }}</span>
         </div>
         <div class="row">
-          <span v-if="state.phase === 'board' || state.phase === 'clue'" class="round">{{ roundName }}</span>
+          <span v-if="['intro', 'board', 'clue'].includes(state.phase)" class="round">{{ roundName }}</span>
           <span class="muted" title="Time until the game closes. Each action resets it.">
             Closes in {{ timeLeft }}
           </span>
@@ -147,14 +148,21 @@ function canJudge(id: string): boolean {
 
       <p v-if="notice" class="error" role="alert">{{ notice }}</p>
 
-      <section v-if="state.phase === 'board'" class="stack">
+      <section v-if="state.phase === 'intro' || state.phase === 'board'" class="stack">
         <GameBoard
           :key="state.roundIndex"
           :categories="state.categories"
-          clickable
+          :clickable="state.phase === 'board'"
+          :intro-revealed="state.phase === 'intro' ? (state.intro?.revealed ?? 0) : null"
           @select="game.selectClue"
         />
-        <div class="row">
+        <HostIntroControls
+          v-if="state.phase === 'intro'"
+          :state="state"
+          @next="game.revealNextCategory()"
+          @start="game.startRound()"
+        />
+        <div v-else class="row">
           <button class="btn" type="button" @click="advance">{{ advanceLabel }}</button>
           <span class="muted">Click a Clue to play it. Click a Contestant's name to mark who is in control.</span>
         </div>

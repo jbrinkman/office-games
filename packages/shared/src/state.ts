@@ -9,7 +9,18 @@ export const contestantSchema = z.object({
 })
 
 export const cellSchema = z.object({ value: z.int(), used: z.boolean() })
-export const boardCategorySchema = z.object({ name: z.string(), cells: z.array(cellSchema) })
+export const boardCategorySchema = z.object({
+  name: z.string(),
+  /** Shown to Viewers while the category is introduced. Null when the Gamefile gave none. */
+  hint: z.string().nullable().default(null),
+  cells: z.array(cellSchema),
+})
+
+/** Progress through the start-of-round category introduction. */
+export const introSchema = z.object({
+  /** How many categories, left to right, have been revealed so far. */
+  revealed: z.int(),
+})
 
 export const judgedSchema = z.object({
   contestantId: z.string(),
@@ -49,19 +60,22 @@ export const finalStateSchema = z.object({
 export const gameStateSchema = z.object({
   version: z.literal(1),
   title: z.string(),
-  phase: z.enum(["board", "clue", "final", "finished"]),
+  phase: z.enum(["intro", "board", "clue", "final", "finished"]),
   roundIndex: z.int(),
   roundCount: z.int(),
   hasFinal: z.boolean(),
   contestants: z.array(contestantSchema),
   activeContestantId: z.string().nullable(),
   categories: z.array(boardCategorySchema),
+  /** Only set while the phase is "intro". */
+  intro: introSchema.nullable().default(null),
   current: currentClueSchema.nullable(),
   final: finalStateSchema.nullable(),
 })
 
 export type Contestant = z.infer<typeof contestantSchema>
 export type BoardCategory = z.infer<typeof boardCategorySchema>
+export type Intro = z.infer<typeof introSchema>
 export type CurrentClue = z.infer<typeof currentClueSchema>
 export type FinalReveal = z.infer<typeof finalRevealSchema>
 export type FinalState = z.infer<typeof finalStateSchema>

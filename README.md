@@ -10,7 +10,7 @@ The first game is **Peril!**, a quiz game in the style of the classic TV quiz sh
 
 1. The Host signs in with Google (the account must be on the Host list), loads a Gamefile (or picks the bundled sample), and adds 2 to 6 Contestants.
 2. The app gives the Host a game URL such as `https://your-site.web.app/g/K7M2QX`. Anyone with the link can watch the board and scores live. No sign-in is needed.
-3. The Host runs the game from a private console: picking Clues, revealing Responses, judging them correct or wrong, setting Double Down wagers, and running Final Peril.
+3. At the start of each round the Host reveals the categories one at a time, reading each category's hint aloud if it has one. The Host then runs the game from a private console: picking Clues, revealing Responses, judging them correct or wrong, setting Double Down wagers, and running Final Peril.
 
 The Host console is at `/host/CODE` and the Viewer board is at `/g/CODE`. Share the Viewer board on a call, or send the link.
 
@@ -57,6 +57,7 @@ A Gamefile is a JSON file validated against [`packages/shared/gamefile.schema.js
 
 - 1 or 2 rounds, each with 1 to 6 categories of exactly 5 Clues.
 - Each Clue has a `value`, a `clue`, and a `response`. Add `"doubleDown": true` to make it a Double Down (at most 2 per round).
+- Each category can have an optional `hint` (up to 300 characters): a short description the Host reads aloud when the category is revealed. Leave it out for categories that speak for themselves.
 - An optional `final` block provides the Final Peril category, clue and response.
 
 To add a bundled game, drop the file in `apps/peril/public/games/` and list it in `index.json`. Bundled games must be original. Do not copy clues from the TV show, J-Archive, or any other source you do not have the rights to, and never put client or personal data in a Gamefile.

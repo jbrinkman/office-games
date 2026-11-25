@@ -15,6 +15,8 @@ export const clueSchema = z.object({
 
 export const categorySchema = z.object({
   name: text(60),
+  /** Optional short description the Host reads aloud when the category is revealed. */
+  hint: text(300).optional(),
   clues: z.array(clueSchema).length(CLUES_PER_CATEGORY),
 })
 

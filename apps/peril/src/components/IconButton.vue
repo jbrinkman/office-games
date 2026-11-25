@@ -1,5 +1,14 @@
 <script setup lang="ts">
-export type IconName = "copy" | "hash" | "open" | "undo" | "trash" | "check"
+export type IconName =
+  | "copy"
+  | "hash"
+  | "open"
+  | "undo"
+  | "trash"
+  | "check"
+  | "next"
+  | "skip"
+  | "play"
 
 defineProps<{
   icon: IconName
@@ -55,6 +64,15 @@ defineProps<{
       </template>
       <template v-else-if="icon === 'trash'">
         <path d="M4 7h16M10 7V4h4v3M6 7l1 13h10l1-13" />
+      </template>
+      <template v-else-if="icon === 'next'">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </template>
+      <template v-else-if="icon === 'skip'">
+        <path d="m5 5 7 7-7 7M13 5l7 7-7 7" />
+      </template>
+      <template v-else-if="icon === 'play'">
+        <path d="M7 4v16l13-8z" />
       </template>
       <path v-else d="m5 12 5 5 9-10" />
     </svg>

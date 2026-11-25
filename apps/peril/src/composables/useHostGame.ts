@@ -14,10 +14,12 @@ import {
   parseGamefile,
   revealFinalCorrectResponse,
   revealFinalEntry,
+  revealNextCategory,
   revealResponse,
   selectClue,
   setActiveContestant,
   setDoubleDownWager,
+  startRound,
 } from "@office-games/shared"
 import { computed, onScopeDispose, ref, shallowRef } from "vue"
 import { serverNow } from "../services/firebase.ts"
@@ -156,6 +158,8 @@ export function useHostGame(code: string, hostUid: string) {
     closeClue: () => run((s) => closeClue(s)),
     setActive: (id: string | null) => run((s) => setActiveContestant(s, id)),
     setScore: (id: string, score: number) => run((s) => adjustScore(s, id, score)),
+    revealNextCategory: () => run((s) => revealNextCategory(s)),
+    startRound: () => run((s) => startRound(s)),
     advance: () => run((s, f) => advanceFromBoard(s, f)),
     finalNext: () => run((s, f) => advanceFinalStage(s, f, entries.value)),
     finalReveal: (id: string) => run((s) => revealFinalEntry(s, entries.value, id)),
